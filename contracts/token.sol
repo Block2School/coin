@@ -1,7 +1,10 @@
 // SPDX-License-Identifier: MIT
-// contracts/firstBEP20.sol
+// contracts/token.sol
 
 pragma solidity >=0.8.0 <0.9.0;
+
+import './ownable.sol';
+import './stackable.sol';
 
 interface IBEP20 {
     /**
@@ -94,7 +97,11 @@ interface IBEP20 {
     event Approval(address indexed owner, address indexed spender, uint256 value);
 }
 
-contract Token is IBEP20 {
+/**
+ * @notice Token is IBEP20 and Ownable
+ */
+
+contract Token is IBEP20, Ownable, Stackable {
 
     string public name_; // The name of the token
     string public symbol_; // The symbol of the token (e.g. SNT)
@@ -174,6 +181,7 @@ contract Token is IBEP20 {
     function approve(address spender, uint256 amount) external override returns (bool) {
         /* Process some checks before the approval */
         require(amount >= 0, "Amount must be greater or equal to 0");
+        require(msg.sender != address(0), "address invalid");
 
         /* Set the allowance */
         allowance_[msg.sender][spender] = amount;
@@ -202,7 +210,7 @@ contract Token is IBEP20 {
         return true;
     }
 
-    function mint(uint256 amount) public returns (bool) {
+    function mint(uint256 amount) public onlyOwner returns (bool) {
         /* Process some checks before the mint */
         require(amount >= 0, "Amount must be greater or equal to 0");
         require(msg.sender == owner_, "Only the owner can mint tokens");
@@ -217,7 +225,7 @@ contract Token is IBEP20 {
         return true;
     }
 
-    function burn(uint256 amount) public returns (bool) {
+    function burn(uint256 amount) public onlyOwner returns (bool) {
         /* Process some checks before the burn */
         require(msg.sender != address(0), "Invalid burn recipient");
         require(amount >= 0, "Amount must be greater or equal to 0");
@@ -231,5 +239,27 @@ contract Token is IBEP20 {
         emit Transfer(msg.sender, address(0), amount);
 
         return true;
+    }
+
+    /**
+    * Add functionality like burn to the _stake function
+    *
+    */
+    function stake(uint256 _amount) public {
+        // make sure the user has enough tokens to stake
+        require(balanceOf_[msg.sender] > _amount, "Not enough tokens to stake");
+
+        _stake(_amount);
+        // burn the tokens
+        burn(_amount);
+    }
+
+    /**
+    * @notice withdrawStake is used to withdraw the staked tokens from the account holder
+    */
+    function withdrawStake(uint256 _amount) public {
+        // make sure the user has enough tokens to withdraw
+        // mint the tokens
+        mint(_amount);
     }
 }

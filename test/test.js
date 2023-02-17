@@ -105,4 +105,51 @@ contract('Token', async (accounts) => {
     }
     assert.equal(err.reason, 'value out-of-bounds', "TransferFrom is successful");
   });
+
+  it('allow account some allowance', async () => {
+    devToken = await Token.deployed();
+
+    try {
+        // Give account(0) access too 100 tokens on creator
+        await devToken.approve('0x0000000000000000000000000000000000000000', 100);
+    } catch (error) {
+        assert.equal(error.reason, 'address invalid', "Should be able to approve zero address");
+    }
+
+    try {
+        // Give account 1 access too 100 tokens on zero account
+        await devToken.approve(accounts[1], 100);
+    } catch(error) {
+        assert.fail(error);
+    }
+
+    let allowance = await devToken.allowance(accounts[0], accounts[1]);
+    assert.equal(allowance.toNumber(), 100, "Allowance was not correctly set");
+  })
+
+  it('transfering with allowance', async () => {
+      devToken = await Token.deployed();
+
+      try {
+        // Account 1 should have 100 tokens by now to use on account 0
+        // lets try using more
+        await devToken.transferFrom(accounts[0], accounts[2], 200, { from: accounts[1] });
+      } catch(error) {
+        let res = error.stack.match('Sender does not have enough allowance');
+        res = res ? res[0] : null;
+        assert.equal(res, 'Sender does not have enough allowance', "Should not be able to transfer more than allowance");
+      }
+
+      let init_allowance = await devToken.allowance(accounts[0], accounts[1]);
+      console.log('init_balance= ', init_allowance.toNumber());
+      try {
+        // Account 1 should have 100 tokens by now to use on account 0
+        // lets try using more
+        await devToken.transferFrom(accounts[0], accounts[2], 50, { from: accounts[1] });
+      } catch(error) {
+        assert.fail(error);
+      }
+      let allowance = await devToken.allowance(accounts[0], accounts[1]);
+      assert.equal(allowance.toNumber(), 50, "Allowance was not correctly set");
+  })
 });
