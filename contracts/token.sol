@@ -225,6 +225,28 @@ contract Token is IBEP20, Ownable, Stackable {
         return true;
     }
 
+    function _mint(address account, uint256 amount) internal {
+        require(account != address(0), "DevToken: cannot mint to zero address");
+        // Increase total supply
+        totalSupply_ = totalSupply_ + amount;
+        // Add the amount to the account balance
+        balanceOf_[account] = balanceOf_[account] + amount;
+        // Emit event
+        emit Transfer(address(0), account, amount);
+    }
+
+    function _burn(address account, uint256 amount) internal {
+        require(account != address(0), "DevToken: cannot burn from zero address");
+        require(balanceOf_[account] >= amount, "DevToken: Cannot burn more than the account owns");
+
+        // Remove the amount from the account balance
+        balanceOf_[account] = balanceOf_[account] - amount;
+        // Decrease totalSupply
+        totalSupply_ = totalSupply_ - amount;
+        // Emit event, use zero address as reciever
+        emit Transfer(account, address(0), amount);
+    }
+
     function burn(uint256 amount) public onlyOwner returns (bool) {
         /* Process some checks before the burn */
         require(msg.sender != address(0), "Invalid burn recipient");
@@ -251,15 +273,17 @@ contract Token is IBEP20, Ownable, Stackable {
 
         _stake(_amount);
         // burn the tokens
-        burn(_amount);
+        _burn(msg.sender, _amount);
     }
 
     /**
     * @notice withdrawStake is used to withdraw the staked tokens from the account holder
     */
-    function withdrawStake(uint256 _amount) public {
-        // make sure the user has enough tokens to withdraw
-        // mint the tokens
-        mint(_amount);
+    function withdrawStake(uint256 _amount, uint256 stake_index) public {
+        uint256 amount_to_mint = _withdrawStake(_amount, stake_index);
+
+        // return stacked tokens to the user
+        _mint(msg.sender, amount_to_mint);
     }
+
 }

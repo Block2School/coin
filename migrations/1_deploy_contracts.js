@@ -1,11 +1,7 @@
 const SolidityContract = artifacts.require("Token");
-const Ownable = artifacts.require("Ownable"); 
-const Stackable = artifacts.require("Stackable");
 
-module.exports = function(deployer) {
+module.exports = async function(deployer) {
   // Deploy the SolidityContract contract as our only task
-  deployer.deploy(SolidityContract);
-
-  // deployer.deploy(Ownable);
-  // deployer.deploy(Stackable);
+  await deployer.deploy(SolidityContract);
+  const tokenContract = await SolidityContract.deployed();
 };
