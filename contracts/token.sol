@@ -97,17 +97,221 @@ interface IBEP20 {
     event Approval(address indexed owner, address indexed spender, uint256 value);
 }
 
+library SafeMath {
+    /**
+     * @dev Returns the addition of two unsigned integers, with an overflow flag.
+     *
+     * _Available since v3.4._
+     */
+    function tryAdd(uint256 a, uint256 b) internal pure returns (bool, uint256) {
+        unchecked {
+            uint256 c = a + b;
+            if (c < a) return (false, 0);
+            return (true, c);
+        }
+    }
+
+    /**
+     * @dev Returns the subtraction of two unsigned integers, with an overflow flag.
+     *
+     * _Available since v3.4._
+     */
+    function trySub(uint256 a, uint256 b) internal pure returns (bool, uint256) {
+        unchecked {
+            if (b > a) return (false, 0);
+            return (true, a - b);
+        }
+    }
+
+    /**
+     * @dev Returns the multiplication of two unsigned integers, with an overflow flag.
+     *
+     * _Available since v3.4._
+     */
+    function tryMul(uint256 a, uint256 b) internal pure returns (bool, uint256) {
+        unchecked {
+            // Gas optimization: this is cheaper than requiring 'a' not being zero, but the
+            // benefit is lost if 'b' is also tested.
+            // See: https://github.com/OpenZeppelin/openzeppelin-contracts/pull/522
+            if (a == 0) return (true, 0);
+            uint256 c = a * b;
+            if (c / a != b) return (false, 0);
+            return (true, c);
+        }
+    }
+
+    /**
+     * @dev Returns the division of two unsigned integers, with a division by zero flag.
+     *
+     * _Available since v3.4._
+     */
+    function tryDiv(uint256 a, uint256 b) internal pure returns (bool, uint256) {
+        unchecked {
+            if (b == 0) return (false, 0);
+            return (true, a / b);
+        }
+    }
+
+    /**
+     * @dev Returns the remainder of dividing two unsigned integers, with a division by zero flag.
+     *
+     * _Available since v3.4._
+     */
+    function tryMod(uint256 a, uint256 b) internal pure returns (bool, uint256) {
+        unchecked {
+            if (b == 0) return (false, 0);
+            return (true, a % b);
+        }
+    }
+
+    /**
+     * @dev Returns the addition of two unsigned integers, reverting on
+     * overflow.
+     *
+     * Counterpart to Solidity's `+` operator.
+     *
+     * Requirements:
+     *
+     * - Addition cannot overflow.
+     */
+    function add(uint256 a, uint256 b) internal pure returns (uint256) {
+        return a + b;
+    }
+
+    /**
+     * @dev Returns the subtraction of two unsigned integers, reverting on
+     * overflow (when the result is negative).
+     *
+     * Counterpart to Solidity's `-` operator.
+     *
+     * Requirements:
+     *
+     * - Subtraction cannot overflow.
+     */
+    function sub(uint256 a, uint256 b) internal pure returns (uint256) {
+        return a - b;
+    }
+
+    /**
+     * @dev Returns the multiplication of two unsigned integers, reverting on
+     * overflow.
+     *
+     * Counterpart to Solidity's `*` operator.
+     *
+     * Requirements:
+     *
+     * - Multiplication cannot overflow.
+     */
+    function mul(uint256 a, uint256 b) internal pure returns (uint256) {
+        return a * b;
+    }
+
+    /**
+     * @dev Returns the integer division of two unsigned integers, reverting on
+     * division by zero. The result is rounded towards zero.
+     *
+     * Counterpart to Solidity's `/` operator.
+     *
+     * Requirements:
+     *
+     * - The divisor cannot be zero.
+     */
+    function div(uint256 a, uint256 b) internal pure returns (uint256) {
+        return a / b;
+    }
+
+    /**
+     * @dev Returns the remainder of dividing two unsigned integers. (unsigned integer modulo),
+     * reverting when dividing by zero.
+     *
+     * Counterpart to Solidity's `%` operator. This function uses a `revert`
+     * opcode (which leaves remaining gas untouched) while Solidity uses an
+     * invalid opcode to revert (consuming all remaining gas).
+     *
+     * Requirements:
+     *
+     * - The divisor cannot be zero.
+     */
+    function mod(uint256 a, uint256 b) internal pure returns (uint256) {
+        return a % b;
+    }
+
+    /**
+     * @dev Returns the subtraction of two unsigned integers, reverting with custom message on
+     * overflow (when the result is negative).
+     *
+     * CAUTION: This function is deprecated because it requires allocating memory for the error
+     * message unnecessarily. For custom revert reasons use {trySub}.
+     *
+     * Counterpart to Solidity's `-` operator.
+     *
+     * Requirements:
+     *
+     * - Subtraction cannot overflow.
+     */
+    function sub(uint256 a, uint256 b, string memory errorMessage) internal pure returns (uint256) {
+        unchecked {
+            require(b <= a, errorMessage);
+            return a - b;
+        }
+    }
+
+    /**
+     * @dev Returns the integer division of two unsigned integers, reverting with custom message on
+     * division by zero. The result is rounded towards zero.
+     *
+     * Counterpart to Solidity's `/` operator. Note: this function uses a
+     * `revert` opcode (which leaves remaining gas untouched) while Solidity
+     * uses an invalid opcode to revert (consuming all remaining gas).
+     *
+     * Requirements:
+     *
+     * - The divisor cannot be zero.
+     */
+    function div(uint256 a, uint256 b, string memory errorMessage) internal pure returns (uint256) {
+        unchecked {
+            require(b > 0, errorMessage);
+            return a / b;
+        }
+    }
+
+    /**
+     * @dev Returns the remainder of dividing two unsigned integers. (unsigned integer modulo),
+     * reverting with custom message when dividing by zero.
+     *
+     * CAUTION: This function is deprecated because it requires allocating memory for the error
+     * message unnecessarily. For custom revert reasons use {tryMod}.
+     *
+     * Counterpart to Solidity's `%` operator. This function uses a `revert`
+     * opcode (which leaves remaining gas untouched) while Solidity uses an
+     * invalid opcode to revert (consuming all remaining gas).
+     *
+     * Requirements:
+     *
+     * - The divisor cannot be zero.
+     */
+    function mod(uint256 a, uint256 b, string memory errorMessage) internal pure returns (uint256) {
+        unchecked {
+            require(b > 0, errorMessage);
+            return a % b;
+        }
+    }
+}
+
 /**
  * @notice Token is IBEP20 and Ownable
  */
 
 contract Token is IBEP20, Ownable, Stackable {
 
+    using SafeMath for uint256;
+
     string public name_; // The name of the token
     string public symbol_; // The symbol of the token (e.g. SNT)
     uint8 public decimals_; // The number of decimals of the token
     uint256 public totalSupply_; // The total amount of tokens in existence
     address payable public owner_; // The owner of the token
+    uint256 public tokenPrice_; // The price of the token
 
     /* this creates a mapping with all balances */
     mapping (address => uint256) public balanceOf_;
@@ -116,10 +320,11 @@ contract Token is IBEP20, Ownable, Stackable {
     mapping (address => mapping (address => uint256)) public allowance_;
 
     constructor() {
-        name_ = "Block2School Coin";
-        symbol_ = "B2S";
-        decimals_ = 8;
+        name_ = "Block2School Coin Test3";
+        symbol_ = "B2ST3";
+        decimals_ = 18;
         uint256 _initialSupply = 10000000 * (10 ** decimals_);
+        tokenPrice_ = 0.0000001 ether;
 
         /* Sets the owner of the token to whoever deployed it */
         owner_ = payable(msg.sender);
@@ -149,6 +354,14 @@ contract Token is IBEP20, Ownable, Stackable {
 
     function getOwner() external view override returns (address) {
         return owner_;
+    }
+
+    function tokenPrice() external view returns (uint256) {
+        return tokenPrice_;
+    }
+
+    function getTokenPriceEquivalent(uint256 amount) external view returns (uint256) {
+        return SafeMath.div(amount, tokenPrice_);
     }
 
     function balanceOf(address account) external view override returns (uint256) {
@@ -221,6 +434,32 @@ contract Token is IBEP20, Ownable, Stackable {
 
         /* Emit the mint event */
         emit Transfer(address(0), msg.sender, amount);
+
+        return true;
+    }
+
+    // function buyTokens(amount) -> the function will check if the user sent enough ether to buy the amount of tokens he wants the ethers will be kept in the contract and the tokens will be sent to the user
+    function buyTokens(uint256 amount) public payable returns (bool) {
+        /* Process some checks before the buy */
+        require(amount > 0, "Amount must be greater than 0");
+        // require(msg.value >= amount * tokenPrice_, "Not enough BNB sent");
+        // msg value >= (amount * tokenPrice_) / 1e18
+        require(msg.value >= SafeMath.div(amount, tokenPrice_), "Not enough BNB sent");
+
+        /* Buy the tokens */
+        balanceOf_[msg.sender] = balanceOf_[msg.sender] + amount;
+        totalSupply_ = totalSupply_ + amount;
+
+        /* Emit the buy event */
+        emit Transfer(address(0), msg.sender, amount);
+
+        return true;
+    }
+
+    // function withdraw() -> the function will withdraw the ethers from the contract to the owner
+    function withdraw() public onlyOwner returns (bool) {
+        /* Withdraw the ethers */
+        owner_.transfer(address(this).balance);
 
         return true;
     }

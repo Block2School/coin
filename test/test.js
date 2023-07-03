@@ -152,4 +152,16 @@ contract('Token', async (accounts) => {
       let allowance = await devToken.allowance(accounts[0], accounts[1]);
       assert.equal(allowance.toNumber(), 50, "Allowance was not correctly set");
   })
+
+  it('buying tokens', async () => {
+    devToken = await Token.deployed();
+    let err;
+
+    try {
+      let buy = await devToken.buyTokens({value: 100*10**18});
+    } catch (error) {
+      err = error;
+    }
+    assert.equal(err.reason, 'value out-of-bounds', "Buy is successful");
+  });
 });
