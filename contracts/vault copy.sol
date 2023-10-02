@@ -18,10 +18,6 @@ contract TokenVault is MultiOwnable {
                                     //    1470588235294117500
     uint256 public BEP20_TOKEN_RATIO = 14705882352941175000000;
 
-    // modifier onlyOwner() {
-    //     require(msg.sender == owner, "Only the contract owner can call this function.");
-    //     _;
-    // }
 
     constructor(address _bep20TokenAddress) {
         owner = msg.sender;
@@ -33,14 +29,6 @@ contract TokenVault is MultiOwnable {
         require(msg.sender == owner, "Only the contract owner can call this function.");
 
         addOwner(newAdmin);
-    }
-
-    function depositBNB() public payable {
-        require(msg.value > 0, "Amount must be greater than 0.");
-        uint256 bep20TokenAmount = msg.value * BEP20_TOKEN_RATIO / 10 ** 18;
-        require(IBEP20(bep20TokenAddress).balanceOf(address(this)) >= bep20TokenAmount, "Not enough BEP20 balance in the contract to fulfill the deposit.");
-
-        IBEP20(bep20TokenAddress).transfer(msg.sender, bep20TokenAmount);
     }
 
     function monthlyGiveaway(uint256[] memory amounts, address[] memory addresses) public onlyOwner {
@@ -55,6 +43,14 @@ contract TokenVault is MultiOwnable {
         for (uint256 i = 0; i < amounts.length; i++) {
             IBEP20(bep20TokenAddress).transfer(addresses[i], amounts[i]);
         }
+    }
+
+    function depositBNB() public payable {
+        require(msg.value > 0, "Amount must be greater than 0.");
+        uint256 bep20TokenAmount = msg.value * BEP20_TOKEN_RATIO / 10 ** 18;
+        require(IBEP20(bep20TokenAddress).balanceOf(address(this)) >= bep20TokenAmount, "Not enough BEP20 balance in the contract to fulfill the deposit.");
+
+        IBEP20(bep20TokenAddress).transfer(msg.sender, bep20TokenAmount);
     }
 
     function depositBEP20(uint256 amount) public {
